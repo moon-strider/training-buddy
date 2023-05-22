@@ -2,7 +2,7 @@ import json
 import os
 import pytest
 
-from utilities.utilities import input_meal, input_stats
+from utilities.utilities import input_meal, input_stats, retrieve_json
 from .consts import INPUT_MEAL_DICT, INPUT_STATS_DICT
 
 
@@ -27,11 +27,9 @@ def test_input_meal():
 
     assert os.path.exists(MEALS_FP_TEST)
 
-    file = open(MEALS_FP_TEST, 'r')
+    data = retrieve_json(MEALS_FP_TEST)
 
-    assert json.load(file) == INPUT_MEAL_DICT
-    
-    file.close()
+    assert data == INPUT_MEAL_DICT
 
     os.remove(MEALS_FP_TEST)
 
@@ -49,10 +47,8 @@ def test_input_stats():
 
     assert os.path.exists(STATS_FP_TEST)
 
-    file = open(STATS_FP_TEST, 'r')
+    data = retrieve_json(STATS_FP_TEST)
 
-    assert json.load(file) == INPUT_STATS_DICT
-
-    file.close()
+    assert data == INPUT_STATS_DICT
 
     os.remove(STATS_FP_TEST)

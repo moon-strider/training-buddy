@@ -16,10 +16,10 @@ FILE_LIST = [MEALS_FP, STATS_FP]
 
 
 logging.basicConfig(
-    filename='debug.log', 
-    encoding='utf-8', 
-    level=logging.DEBUG, 
-    format='%(asctime)s %(levelname)-8s %(message)s', 
+    filename='debug.log',
+    encoding='utf-8',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)-8s %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
@@ -27,15 +27,12 @@ print(STATS_FP)
 
 
 def ensure_date_correctness(date: str) -> None:
-    (dd, mm, yyyy) = date.split('.')
+    (dd, mm, yyyy) = list(map(lambda x: int(x), date.split('.')))
 
     try:
-        _ = datetime.datetime(int(yyyy), int(mm), int(dd))
+        _ = datetime.datetime(yyyy, mm, dd)
     except ValueError:
-        raise ValueError("The provided date is not correct.")
-
-    if len(dd) != 2 or len(mm) != 2 or len(yyyy) != 4:
-        raise ValueError('The date must be in \"dd.mm.yyyy\" format.')
+        raise ValueError("The provided date is not correct. The date must be in \"dd.mm.yyyy\" format.")
 
 
 def ensure_non_negative(*vars) -> None:
@@ -78,7 +75,7 @@ def input_meal(date: str, calories: float, proteins: float, fats: float, carbs: 
         'is_healthy': is_healthy
     }
 
-    with open(meals_fp, 'w', encoding='utf-8') as file:    
+    with open(meals_fp, 'w', encoding='utf-8') as file:
         index = 1
 
         if date in data.keys():
@@ -109,15 +106,18 @@ def input_stats(date: str, weight: float, heart_rate: int, steps: int, age: int,
         'VO2max': 15 * (220 - age) / heart_rate
     }
 
-    with open(stats_fp, 'w', encoding='utf-8') as file:    
-        if date in data.keys():
-            raise ValueError("Such a date already has data associated with it.")
-        else:
-            data[date] = payload
+    if date in data.keys():
+        raise ValueError("Such a date already has data associated with it.")
+    else:
+        data[date] = payload
 
-        logging.debug(f'appending stats to {date}')
+    file = open(stats_fp, 'w', encoding='utf-8')
 
-        json.dump(data, file, ensure_ascii=False, indent=4)
+    logging.debug(f'appending stats to {date}')
+
+    json.dump(data, file, ensure_ascii=False, indent=4)
+
+    file.close()
 
 
 def init_dirs_and_files() -> None:
