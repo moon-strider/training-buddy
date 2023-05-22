@@ -2,6 +2,6 @@ debug.log
 data/*
 tests/__pycache__/*
 tests/.pytest_cache/*
-utils/__pycache__/*
+utilities/__pycache__/*
 .pytest_cache/*
 .vscode/*

@@ -1,9 +1,6 @@
-from utils.utils import input_meal
-# TODO: init dirs
+from utilities.utilities import input_stats
 
 
 if __name__ == '__main__':
-    input_meal('11.11.2001', 150, 150, 200, 150, False)
-    input_meal('11.11.2001', 150, 150, 200, 170, False)
-    input_meal('11.12.2001', 150, 150, 200, 190, False)
-    #input_meal('111.11.2001', 150, 150, 200, 150, False)
+    input_stats('11.11.2001', 150, 150, 200, 150, stats_fp=r'C:\Users\iamth\Documents\Projects\training-buddy\tests\stats.json')
+    input_stats('12.11.2001', 150, 150, 200, 170)
