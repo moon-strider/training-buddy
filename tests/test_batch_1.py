@@ -1,8 +1,8 @@
-import json
 import os
 import pytest
 
 from utilities.utilities import input_meal, input_stats, retrieve_json
+from utilities.calc import VO2max, calories
 from .consts import INPUT_MEAL_DICT, INPUT_STATS_DICT
 
 
@@ -52,3 +52,13 @@ def test_input_stats():
     assert data == INPUT_STATS_DICT
 
     os.remove(STATS_FP_TEST)
+
+
+def test_calories():
+    assert calories(1, 95, 189, 21, 'moderate') == 3150
+    assert calories(0, 80, 175, 29, 'light') == 2185
+
+
+def test_VO2max():
+    assert VO2max(21, 45) == 66
+    assert VO2max(29, 65) == 44

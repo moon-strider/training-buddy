@@ -4,6 +4,9 @@ import logging
 import datetime
 
 
+from utilities.calc import VO2max
+
+
 PROJECT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
 
 DATA_DIR = os.path.join(PROJECT_PATH, 'data')
@@ -103,7 +106,7 @@ def input_stats(date: str, weight: float, heart_rate: int, steps: int, age: int,
         'weight': weight,
         'heart_rate': heart_rate,
         'steps': steps,
-        'VO2max': 15 * (220 - age) / heart_rate
+        'VO2max': VO2max(age, heart_rate)
     }
 
     if date in data.keys():
