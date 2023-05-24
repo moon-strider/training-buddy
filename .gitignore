@@ -3,5 +3,6 @@ data/*
 tests/__pycache__/*
 tests/.pytest_cache/*
 utilities/__pycache__/*
+front/__pycache__/*
 .pytest_cache/*
 .vscode/*

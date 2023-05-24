@@ -1,4 +1,4 @@
-import tkinter as tk
+from front.windows import tkinterApp
 
 from utilities.utilities import input_stats
 
@@ -15,17 +15,7 @@ from utilities.utilities import input_stats
 # TODO: add csv support
 
 if __name__ == '__main__':
-    window = tk.Tk(className='Training buddy')
+    window = tkinterApp()
     window.geometry('1280x720')
-    program_name = tk.Label(text='Training buddy')
-
-    input_meal_btn = tk.Button(text="Input meal", width=25, height=5)
-    input_stats_btn = tk.Button(text="Input stats", width=25, height=5)
-
-
-
-    program_name.pack()
-    input_meal_btn.pack()
-    input_stats_btn.pack()
 
     window.mainloop()
