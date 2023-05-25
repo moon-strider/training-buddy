@@ -1,10 +1,15 @@
 import tkinter as tk
+
+from tkinter.messagebox import showinfo, showwarning, showerror
 from tkinter import ttk
+from utilities.utilities import input_meal, input_stats
 
 LARGEFONT = ('Verdana', 35)
 
 BASE_WIDTH = 1280
 BASE_HEIGHT = 720
+
+# FIXME: add date selection (calendar widget?) to inputs
   
 class tkinterApp(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -32,8 +37,8 @@ class tkinterApp(tk.Tk):
 
   
 class StartPage(tk.Frame):
-    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT):
-        tk.Frame.__init__(self, parent, width=width, height=height)
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
+        tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
 
         label = ttk.Label(self, text ='Training buddy', font = LARGEFONT)
 
@@ -60,10 +65,19 @@ def generate_header(parent, controller, title: str):
 
 
 class InputMeal(tk.Frame):
-    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT):
-        tk.Frame.__init__(self, parent, width=width, height=height)
-        self.title = 'Input Meal'
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
+        tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
 
+        self.types = {
+            'date': str,
+            'calories': int,
+            'carbs': int,
+            'proteins': int,
+            'fats': int,
+            'is_healthy': lambda x: False if x == 'No' else True,
+        }
+
+        self.title = 'Input Meal'
         back_btn, title_label = generate_header(self, controller, self.title)
 
         calories_label = tk.Label(self, text='Calories')
@@ -78,18 +92,37 @@ class InputMeal(tk.Frame):
         fats_entry = tk.Entry(self)
         is_healthy_entry = tk.Entry(self)      # load it from prev
 
-        for i, item in enumerate([calories_label, carbs_label, proteins_label, fats_label, is_healthy_label]):
+        self.names = ['calories', 'carbs', 'proteins', 'fats', 'is_healthy']
+        self.labels = [calories_label, carbs_label, proteins_label, fats_label, is_healthy_label]
+        self.entries = [calories_entry, carbs_entry, proteins_entry, fats_entry, is_healthy_entry]
+
+        for i, item in enumerate(self.labels):
             item.grid(row=i+1, column=0, padx=190, pady=20, columnspan=2)
 
-        for i, item in enumerate([calories_entry, carbs_entry, proteins_entry, fats_entry, is_healthy_entry]):
+        for i, item in enumerate(self.entries):
             item.grid(row=i+1, column=1, padx=10, pady=20)
 
+        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter())
+        btn_enter.grid(row=7, column=1, pady=50)
 
-class InputStats(tk.Frame):
-    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT):
-        tk.Frame.__init__(self, parent, width=width, height=height)
+    def enter(self):   # TODO: add tests
+        payload = []
+        for i, entry in enumerate(self.entries):
+            name = self.names[i]
+            try:
+                payload.append(self.types[name](entry.get()))
+            except Exception:
+                showwarning(title="Warning!", message=f"Make sure that the {name} is correct")
+                return
+
+        input_meal('11.11.2011', *payload)
+
+
+class InputStats(tk.Frame): # TODO: copy from input stats
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
+        tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
+
         self.title = 'Input Stats'
-
         back_btn, title_label = generate_header(self, controller, self.title)
 
         date_label = tk.Label(self, text='Date')
@@ -109,3 +142,9 @@ class InputStats(tk.Frame):
 
         for i, item in enumerate([date_entry, weight_entry, hr_entry, steps_entry, age_entry]):
             item.grid(row=i+1, column=1, padx=10, pady=20)
+
+        btn_enter = tk.Button(self, text='Enter', width=20, height=2)
+        btn_enter.grid(row=7, column=1, pady=50)
+
+
+# TODO: add input exercise with a list of exercises and their respective caloric costs
