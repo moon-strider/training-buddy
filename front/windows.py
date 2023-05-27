@@ -5,7 +5,7 @@ from tkinter.messagebox import showinfo, showwarning, showerror
 from tkinter import ttk
 from datetime import datetime
 
-from utilities.utilities import input_meal, input_stats
+from utilities.utilities import input_meal, input_stats, format_date
 
 LARGEFONT = ('Verdana', 35)
 
@@ -14,6 +14,7 @@ BASE_HEIGHT = 720
 
 # TODO: extract a class for input screens
 # TODO: add settings for default calendar date
+# TODO: add releases and release branches
   
 class tkinterApp(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -68,21 +69,29 @@ def generate_header(parent, controller, title: str):
     return back_btn, title_label
 
 
-class InputMeal(tk.Frame):
+class InputFrame():
+    def enter(self, input_func: callable) -> None:
+        payload = []
+        for i, entry in enumerate(self.entries):
+            name = self.names[i]
+            try:
+                payload.append(self.types[name](entry.get()))
+            except Exception as e:
+                showwarning(title="Warning!", message=f"Make sure that the {name} entry is correct.")
+                return
+        
+        (mm, dd, yyyy) = payload[0].split('/')
+        date = format_date(dd, mm, yyyy)
+
+        try:
+            input_func(date, *payload[1:])
+        except Exception as e:
+            showerror('Error', e)
+
+
+class InputMeal(tk.Frame, InputFrame):
     def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
         tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
-
-        self.types = {
-            'date': str,
-            'calories': int,
-            'carbs': int,
-            'proteins': int,
-            'fats': int,
-            'is_healthy': lambda x: False if x == 'No' else True,
-        }
-
-        self.title = 'Input Meal'
-        back_btn, title_label = generate_header(self, controller, self.title)
 
         date_label = tk.Label(self, text='Date')
         calories_label = tk.Label(self, text='Calories')
@@ -98,9 +107,21 @@ class InputMeal(tk.Frame):
         fats_entry = tk.Entry(self)
         is_healthy_entry = tk.Entry(self)
 
+        self.types = {
+            'date': str,
+            'calories': int,
+            'carbs': int,
+            'proteins': int,
+            'fats': int,
+            'is_healthy': lambda x: False if x == 'No' else True,
+        }
+
         self.labels = [date_label, calories_label, carbs_label, proteins_label, fats_label, is_healthy_label]
         self.entries = [date_entry, calories_entry, carbs_entry, proteins_entry, fats_entry, is_healthy_entry]
-        self.names = [i['text'].lower() for i in self.labels]
+        self.names = [i['text'].lower().replace(" ", "_") for i in self.labels]
+
+        self.title = 'Input Meal'
+        back_btn, title_label = generate_header(self, controller, self.title)
 
         for i, item in enumerate(self.labels):
             item.grid(row=i+1, column=0, padx=190, pady=20, columnspan=2)
@@ -111,42 +132,13 @@ class InputMeal(tk.Frame):
         (yyyy, mm, dd) = list(map(lambda x: int(x), datetime.today().strftime('%Y-%m-%d').split('-')))
         self.calendar = Calendar(self, selectmode = 'day', year = yyyy, month = mm, day = dd)
 
-        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter())
+        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter(input_meal))
         btn_enter.grid(row=7, column=1, pady=50)
 
-    def enter(self): # TODO: extract and generalize?
-        payload = []
-        for i, entry in enumerate(self.entries):
-            name = self.names[i]
-            try:
-                payload.append(self.types[name](entry.get()))
-            except Exception:
-                showwarning(title="Warning!", message=f"Make sure that the {name} entry is correct")
-                return
-        
-        (mm, dd, yyyy) = self.calendar.get_date().split('/')
-        date = f'{dd if len(dd) == 2 else "0" + dd}.{mm if len(mm) == 2 else "0" + mm}.{"20" + yyyy}'
 
-        try:
-            input_meal(date, *payload[1:])
-        except Exception as e:
-            showerror('Error', e)
-
-
-class InputStats(tk.Frame):
+class InputStats(tk.Frame, InputFrame):
     def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
         tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
-
-        self.title = 'Input Stats'
-        back_btn, title_label = generate_header(self, controller, self.title)
-
-        self.types = {
-            'date': str,
-            'weight': float,
-            'hr': int,
-            'steps': int,
-            'age': int,
-        }
 
         date_label = tk.Label(self, text='Date')
         weight_label = tk.Label(self, text='Weight')
@@ -160,9 +152,20 @@ class InputStats(tk.Frame):
         steps_entry = tk.Entry(self)
         age_entry = tk.Entry(self)
 
+        self.types = {
+            'date': str,
+            'weight': float,
+            'hr': int,
+            'steps': int,
+            'age': int,
+        }
+
         self.labels = [date_label, weight_label, hr_label, steps_label, age_label]
         self.entries = [date_entry, weight_entry, hr_entry, steps_entry, age_entry]
         self.names = [i['text'].lower() for i in self.labels]
+
+        self.title = 'Input Stats'
+        back_btn, title_label = generate_header(self, controller, self.title)
 
         for i, item in enumerate(self.labels):
             item.grid(row=i+1, column=0, padx=190, pady=20, columnspan=2)
@@ -173,26 +176,8 @@ class InputStats(tk.Frame):
         (yyyy, mm, dd) = list(map(lambda x: int(x), datetime.today().strftime('%Y-%m-%d').split('-')))
         self.calendar = Calendar(self, selectmode = 'day', year = yyyy, month = mm, day = dd)
 
-        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter())
+        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter(input_stats))
         btn_enter.grid(row=7, column=1, pady=50)
-
-    def enter(self): # TODO: extract and generalize?
-        payload = []
-        for i, entry in enumerate(self.entries):
-            name = self.names[i]
-            try:
-                payload.append(self.types[name](entry.get()))
-            except Exception:
-                showwarning(title="Warning!", message=f"Make sure that the {name} entry is correct")
-                return
-        
-        (mm, dd, yyyy) = self.calendar.get_date().split('/')
-        date = f'{dd if len(dd) == 2 else "0" + dd}.{mm if len(mm) == 2 else "0" + mm}.{"20" + yyyy}'
-
-        try:
-            input_stats(date, *payload[1:])
-        except Exception as e:
-            showerror('Error', e)
 
 
 # TODO: add input exercise with a list of exercises and their respective caloric costs

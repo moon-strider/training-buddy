@@ -123,6 +123,10 @@ def input_stats(date: str, weight: float, heart_rate: int, steps: int, age: int,
     file.close()
 
 
+def format_date(dd: str, mm: str, yyyy: str) -> str: # TODO: add tests
+    return f'{dd if len(dd) == 2 else "0" + dd}.{mm if len(mm) == 2 else "0" + mm}.{"20" + yyyy}'
+
+
 def init_dirs_and_files() -> None:
     for dir in DIR_LIST:
         if not os.path.exists(dir):
