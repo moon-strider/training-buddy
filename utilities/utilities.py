@@ -64,7 +64,7 @@ def retrieve_json(FP: str) -> dict:
 
 
 def input_meal(date: str, calories: float, proteins: float, fats: float, carbs: float, is_healthy: bool, meals_fp=MEALS_FP) -> None:
-    ensure_date_correctness(date)
+    ensure_date_correctness(date)                           # TODO: extract and generalize inputs?
     ensure_non_negative(calories, proteins, fats, carbs)
     ensure_file_exists(meals_fp)
 
