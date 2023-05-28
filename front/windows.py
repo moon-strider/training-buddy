@@ -11,6 +11,7 @@ LARGEFONT = ('Verdana', 35)
 
 BASE_WIDTH = 1280
 BASE_HEIGHT = 720
+BG_COLOR = 'black'
 
 # TODO: extract a class for input screens
 # TODO: add settings for default calendar date
@@ -28,7 +29,7 @@ class tkinterApp(tk.Tk):
   
         self.frames = {} 
   
-        for F in (StartPage, InputMeal, InputStats):
+        for F in (StartPage, InputMeal, InputStats, CalendarLookup):
             frame = F(container, self, width=BASE_WIDTH, height=BASE_HEIGHT)
             self.frames[F] = frame
             frame.grid(row = 0, column = 0, sticky ='nsew')
@@ -42,7 +43,7 @@ class tkinterApp(tk.Tk):
 
   
 class StartPage(tk.Frame):
-    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg=BG_COLOR):
         tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
 
         label = ttk.Label(self, text ='Training buddy', font = LARGEFONT)
@@ -56,6 +57,10 @@ class StartPage(tk.Frame):
         input_stats_btn = tk.Button(self, text ='Input Stats',
             command = lambda : controller.show_frame(InputStats), width=40, height=3)
         input_stats_btn.grid(row = 2, column = 1, padx = 250, pady = 40)
+
+        calendar_lookup_btn = tk.Button(self, text ='Calendar Lookup',
+            command = lambda : controller.show_frame(CalendarLookup), width=40, height=3)
+        calendar_lookup_btn.grid(row = 3, column = 1, padx = 250, pady = 40)
 
 
 def generate_header(parent, controller, title: str):
@@ -90,8 +95,11 @@ class InputFrame():
 
 
 class InputMeal(tk.Frame, InputFrame):
-    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg=BG_COLOR):
         tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
+
+        self.title = 'Input Meal'
+        back_btn, title_label = generate_header(self, controller, self.title)
 
         date_label = tk.Label(self, text='Date')
         calories_label = tk.Label(self, text='Calories')
@@ -120,9 +128,6 @@ class InputMeal(tk.Frame, InputFrame):
         self.entries = [date_entry, calories_entry, carbs_entry, proteins_entry, fats_entry, is_healthy_entry]
         self.names = [i['text'].lower().replace(" ", "_") for i in self.labels]
 
-        self.title = 'Input Meal'
-        back_btn, title_label = generate_header(self, controller, self.title)
-
         for i, item in enumerate(self.labels):
             item.grid(row=i+1, column=0, padx=190, pady=20, columnspan=2)
 
@@ -133,12 +138,15 @@ class InputMeal(tk.Frame, InputFrame):
         self.calendar = Calendar(self, selectmode = 'day', year = yyyy, month = mm, day = dd)
 
         btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter(input_meal))
-        btn_enter.grid(row=7, column=1, pady=50)
+        btn_enter.grid(row=len(self.labels)+2, column=1, pady=50)
 
 
 class InputStats(tk.Frame, InputFrame):
-    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg="black"):
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg=BG_COLOR):
         tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
+
+        self.title = 'Input Stats'
+        back_btn, title_label = generate_header(self, controller, self.title)
 
         date_label = tk.Label(self, text='Date')
         weight_label = tk.Label(self, text='Weight')
@@ -164,9 +172,6 @@ class InputStats(tk.Frame, InputFrame):
         self.entries = [date_entry, weight_entry, hr_entry, steps_entry, age_entry]
         self.names = [i['text'].lower() for i in self.labels]
 
-        self.title = 'Input Stats'
-        back_btn, title_label = generate_header(self, controller, self.title)
-
         for i, item in enumerate(self.labels):
             item.grid(row=i+1, column=0, padx=190, pady=20, columnspan=2)
 
@@ -177,7 +182,23 @@ class InputStats(tk.Frame, InputFrame):
         self.calendar = Calendar(self, selectmode = 'day', year = yyyy, month = mm, day = dd)
 
         btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: self.enter(input_stats))
-        btn_enter.grid(row=7, column=1, pady=50)
+        btn_enter.grid(row=len(self.labels)+2, column=1, pady=50)
+
+
+class CalendarLookup(tk.Frame):
+    def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg=BG_COLOR):
+        tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
+
+        self.title = 'Calendar Lookup'
+        back_btn, title_label = generate_header(self, controller, self.title)
+
+        (yyyy, mm, dd) = list(map(lambda x: int(x), datetime.today().strftime('%Y-%m-%d').split('-')))
+        self.calendar = Calendar(self, selectmode = 'day', year = yyyy, month = mm, day = dd)
+
+        self.calendar.grid(row=1, column=1, pady=50)
+
+        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: None)
+        btn_enter.grid(row=2, column=1, pady=50)
 
 
 # TODO: add input exercise with a list of exercises and their respective caloric costs
