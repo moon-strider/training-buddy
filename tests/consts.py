@@ -1,3 +1,5 @@
+# TODO: divide test consts and other types
+
 INPUT_MEAL_DICT = {
     "11.11.2001": {
         "1": {
@@ -39,4 +41,13 @@ INPUT_STATS_DICT = {
         "steps": 200,
         "VO2max": 5.0
     }
+}
+
+# Countable exercises contain calories per rep, running, swimming, etc. contain calories per hour
+EXERCISES = {
+    'squats': 0.32,
+    'push-ups': 0.3,
+    'pull-ups': 1,
+    'running': 1020,
+    'swimming': 500
 }

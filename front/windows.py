@@ -189,7 +189,7 @@ class CalendarLookup(tk.Frame):
     def __init__(self, parent, controller, width=BASE_WIDTH, height=BASE_HEIGHT, bg=BG_COLOR):
         tk.Frame.__init__(self, parent, width=width, height=height, bg=bg)
 
-        self.title = 'Calendar Lookup'
+        self.title = 'Lookup'
         back_btn, title_label = generate_header(self, controller, self.title)
 
         (yyyy, mm, dd) = list(map(lambda x: int(x), datetime.today().strftime('%Y-%m-%d').split('-')))
@@ -197,7 +197,7 @@ class CalendarLookup(tk.Frame):
 
         self.calendar.grid(row=1, column=1, pady=50)
 
-        btn_enter = tk.Button(self, text='Enter', width=20, height=2, command=lambda: None)
+        btn_enter = tk.Button(self, text='Lookup', width=20, height=2, command=lambda: None)
         btn_enter.grid(row=2, column=1, pady=50)
 
 
