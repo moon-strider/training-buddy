@@ -1,7 +1,8 @@
 import os
 import pytest
+import numpy as np
 
-from utilities.utilities import input_meal, input_stats, retrieve_json
+from utilities.utilities import *
 from utilities.calc import VO2max, calories
 from .consts import INPUT_MEAL_DICT, INPUT_STATS_DICT
 
@@ -62,3 +63,15 @@ def test_calories():
 def test_VO2max():
     assert VO2max(21, 45) == 66
     assert VO2max(29, 65) == 44
+
+
+def test_ensure_non_negative():
+    for i in range(10):
+        arr = [np.random.randint(-1000, 1000) for _ in range(100)]
+        arr[499] = -abs(arr[499])
+        with pytest.raises(ValueError):
+            ensure_non_negative(*arr)
+
+        arr = np.abs(arr)
+        ensure_non_negative(*arr)
+        
