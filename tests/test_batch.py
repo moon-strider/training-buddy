@@ -66,12 +66,28 @@ def test_VO2max():
 
 
 def test_ensure_non_negative():
-    for i in range(10):
+    for _ in range(10):
         arr = [np.random.randint(-1000, 1000) for _ in range(100)]
-        arr[499] = -abs(arr[499])
+        arr[49] = -abs(arr[49])
         with pytest.raises(ValueError):
             ensure_non_negative(*arr)
 
         arr = np.abs(arr)
         ensure_non_negative(*arr)
         
+
+def test_ensure_date_correctness():
+    for _ in range(10):
+        dd_c = str(np.random.randint(1, 28))
+        mm_c = str(np.random.randint(1, 12))
+        yyyy_c = str(np.random.randint(0, 2020))
+        ensure_date_correctness(f"{dd_c}.{mm_c}.{yyyy_c}")
+        with pytest.raises(ValueError):
+            dd_e = str(np.random.randint(32, 40))
+            ensure_date_correctness(f"{dd_e}.{mm_c}.{yyyy_c}")
+        with pytest.raises(ValueError):
+            mm_e = str(np.random.randint(13, 40))
+            ensure_date_correctness(f"{dd_c}.{mm_e}.{yyyy_c}")
+        with pytest.raises(ValueError):
+            yyyy_e = str(np.random.randint(-100, -1))
+            ensure_date_correctness(f"{dd_c}.{mm_c}.{yyyy_e}")
